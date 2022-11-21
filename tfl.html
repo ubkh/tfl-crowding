@@ -27,7 +27,7 @@
                     const labels = obj.timeBands.map(band => band.timeBand);
                     const crowding = obj.timeBands.map(band => band.percentageOfBaseLine * 100)
 
-                    $("#demo").html("LABELS" + JSON.stringify(labels));
+                    //$("#demo").html("LABELS" + JSON.stringify(labels));
                     
                     const data = {
                         labels: labels,
@@ -59,6 +59,17 @@
                     const pmPeak = document.getElementById('pmPeakTime');
                     amPeak.innerHTML = "AM Peak: " + obj.amPeakTimeBand;
                     pmPeak.innerHTML = "PM Peak: " + obj.pmPeakTimeBand;
+
+                    const table = document.getElementById('table');
+                    table.innerHTML = "";
+
+                    for (var n=0; n < labels.length; n++) {
+
+					    var row = "<tr><td>" + labels[n] + "</td>" 
+                            + "<td>" + crowding[n].toFixed() + "</td></tr>";
+
+					    table.innerHTML += row;
+                    }
                 });
             }
         </script>
@@ -102,5 +113,13 @@
         <span id="amPeakTime" style="display: block;"></span>
         &nbsp;
         <span id="pmPeakTime" style="display: block;"></span>
+
+        &nbsp;
+        <h2>Table of crowding</h2>
+        <table>
+            <th>Time Band</th>
+            <th>Crowding Percentage</th>
+            <tbody id="table"></tbody>
+        </table>
     </body>
 </html>
