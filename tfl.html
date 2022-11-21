@@ -8,20 +8,53 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
         <script>
             const API_KEY = "180e4822219044019f49f77f725fe0c6";
+            var chart;
 
             function loadJSON() {
                 var naptan = document.getElementById("stationInput").value;
                 var dayOfWeek = document.getElementById("dayInput").value;
-
+                
                 $.ajax({
                     "url":"https://api.tfl.gov.uk/crowding/" + naptan + "/" + dayOfWeek,
                     "type":"GET",
                     "data": { app_key:API_KEY },
                     "dataType":"JSON"
                 })
-                .done( (data)=>{
-                    let txt = JSON.stringify(data);
-                    $("#demo").html(txt);
+                .done( (json)=>{
+                    let txt = JSON.stringify(json);
+                    //$("#demo").html(txt);
+                    const obj = JSON.parse(txt);
+                    const labels = obj.timeBands.map(band => band.timeBand);
+                    const crowding = obj.timeBands.map(band => band.percentageOfBaseLine * 100)
+                    
+                    $("#demo").html("LABELS" + JSON.stringify(labels));
+                    
+                    const data = {
+                        labels: labels,
+                        datasets: [{
+                            label: "Crowding",
+                            data: crowding,
+                        }]
+                    };
+
+                    const config = {
+                        type: 'bar',
+                        data: data,
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    suggestedMin: 0,
+                                    suggestedMax: 100
+                                }
+                            }
+                        },
+                    };
+
+                    const ctx = document.getElementById('chart').getContext('2d');
+                    if (chart) chart.destroy();
+                    chart = new Chart(ctx, config);
+
                 });
             }
         </script>
@@ -57,5 +90,7 @@
 
             <button type="button" onclick="loadJSON()">View crowding info!</button>
         </form>
+
+        <canvas id="chart"></canvas>
     </body>
 </html>
