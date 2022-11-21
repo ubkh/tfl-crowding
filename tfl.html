@@ -26,7 +26,7 @@
                     const obj = JSON.parse(txt);
                     const labels = obj.timeBands.map(band => band.timeBand);
                     const crowding = obj.timeBands.map(band => band.percentageOfBaseLine * 100)
-                    
+
                     $("#demo").html("LABELS" + JSON.stringify(labels));
                     
                     const data = {
@@ -55,6 +55,10 @@
                     if (chart) chart.destroy();
                     chart = new Chart(ctx, config);
 
+                    const amPeak = document.getElementById('amPeakTime');
+                    const pmPeak = document.getElementById('pmPeakTime');
+                    amPeak.innerHTML = "AM Peak: " + obj.amPeakTimeBand;
+                    pmPeak.innerHTML = "PM Peak: " + obj.pmPeakTimeBand;
                 });
             }
         </script>
@@ -91,6 +95,12 @@
             <button type="button" onclick="loadJSON()">View crowding info!</button>
         </form>
 
+        &nbsp;
         <canvas id="chart"></canvas>
+
+        &nbsp;
+        <span id="amPeakTime" style="display: block;"></span>
+        &nbsp;
+        <span id="pmPeakTime" style="display: block;"></span>
     </body>
 </html>
