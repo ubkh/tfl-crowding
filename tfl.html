@@ -4,8 +4,58 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>TfL Crowding</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+        <script>
+            const API_KEY = "180e4822219044019f49f77f725fe0c6";
+
+            function loadJSON() {
+                var naptan = document.getElementById("stationInput").value;
+                var dayOfWeek = document.getElementById("dayInput").value;
+
+                $.ajax({
+                    "url":"https://api.tfl.gov.uk/crowding/" + naptan + "/" + dayOfWeek,
+                    "type":"GET",
+                    "data": { app_key:API_KEY },
+                    "dataType":"JSON"
+                })
+                .done( (data)=>{
+                    let txt = JSON.stringify(data);
+                    $("#demo").html(txt);
+                });
+            }
+        </script>
     </head>
     <body>
         <h1>View crowding info at tube stations</h1>
+
+        <p id="demo"></p>
+
+        <form action="">
+            <label for="">Station:</label>
+            <select name="station" id="stationInput">
+                <option value="940GZZLUPAC">Paddington</option>
+                <option value="940GZZLUKSX">King’s Cross St Pancras</option>
+                <option value="940GZZLUEUS">Euston</option>
+                <option value="940GZZLUWLO">Waterloo</option>
+                <option value="940GZZLULNB">London Bridge</option>
+                <option value="940GZZLULVT">Liverpool Street</option>
+            </select>
+            &nbsp;
+
+            <label for="">Day of week:</label>
+            <select name="day" id="dayInput">
+                <option value="mon">Monday</option>
+                <option value="tue">Tuesday</option>
+                <option value="wed">Wednesday</option>
+                <option value="thu">Thursday</option>
+                <option value="fri">Friday</option>
+                <option value="sat">Saturday</option>
+                <option value="sun">Sunday</option>
+            </select>
+            &nbsp;
+
+            <button type="button" onclick="loadJSON()">View crowding info!</button>
+        </form>
     </body>
 </html>
