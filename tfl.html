@@ -6,6 +6,7 @@
         <title>TfL Crowding</title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
         <script>
             const API_KEY = "180e4822219044019f49f77f725fe0c6";
             var chart;
@@ -75,9 +76,9 @@
         </script>
     </head>
     <body>
-        <h1>View crowding info at tube stations</h1>
+        <h1><b>Crowding info at tube stations</b></h1>
 
-        <p id="demo"></p>
+        <h5>Select a station and a day of the week to view visualisations of crowding data.</h5>
 
         <form action="">
             <label for="">Station:</label>
@@ -103,7 +104,7 @@
             </select>
             &nbsp;
 
-            <button type="button" onclick="loadJSON()">View crowding info!</button>
+            <button type="button" onclick="loadJSON()" class="button-primary">View crowding info!</button>
         </form>
 
         &nbsp;
@@ -115,8 +116,8 @@
         <span id="pmPeakTime" style="display: block;"></span>
 
         &nbsp;
-        <h2>Table of crowding</h2>
-        <table>
+        <h2><b>Table of Crowding</b></h2>
+        <table class="u-full-width">
             <th>Time Band</th>
             <th>Crowding Percentage</th>
             <tbody id="table"></tbody>
