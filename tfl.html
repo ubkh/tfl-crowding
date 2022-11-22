@@ -4,32 +4,43 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>TfL Crowding</title>
+        <!-- include relevant libraries -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+        <!-- skeleton used for styling elements -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
         <script>
+            // key for issuing GET requests to the TfL API
             const API_KEY = "180e4822219044019f49f77f725fe0c6";
             var chart;
 
+            // when the button is clicked...
             function loadJSON() {
+                // extract and store the NaPTAN ID and Day of Week via the value
+                // of the dropdown index currently selected
                 var naptan = document.getElementById("stationInput").value;
                 var dayOfWeek = document.getElementById("dayInput").value;
                 
+                // query API for crowding information based on selection
                 $.ajax({
+                    // construct URL using the selections
                     "url":"https://api.tfl.gov.uk/crowding/" + naptan + "/" + dayOfWeek,
                     "type":"GET",
+                    // include API key in header
                     "data": { app_key:API_KEY },
                     "dataType":"JSON"
                 })
+                // response handled by arrow function
                 .done( (json)=>{
-                    let txt = JSON.stringify(json);
-                    //$("#demo").html(txt);
-                    const obj = JSON.parse(txt);
+                    // construct JS Object from the JSON response
+                    const obj = JSON.parse(JSON.stringify(json));
+                    // stores the time bands
                     const labels = obj.timeBands.map(band => band.timeBand);
+                    // stores the mapped crowding percentage
                     const crowding = obj.timeBands.map(band => band.percentageOfBaseLine * 100)
-
-                    //$("#demo").html("LABELS" + JSON.stringify(labels));
                     
+                    // create data required for the Chart config by
+                    // encapsulating the time bands and crowding percentage
                     const data = {
                         labels: labels,
                         datasets: [{
@@ -38,12 +49,14 @@
                         }]
                     };
 
+                    // create config for Chart object including the data const
                     const config = {
                         type: 'bar',
                         data: data,
                         options: {
                             scales: {
                                 y: {
+                                    // ensure y-axis begins at 0, end at 100
                                     beginAtZero: true,
                                     suggestedMin: 0,
                                     suggestedMax: 100
@@ -51,21 +64,29 @@
                             }
                         },
                     };
-
+                    
+                    // store the canvas element on which the chart is to be displayed
                     const ctx = document.getElementById('chart').getContext('2d');
+                    // destroys any existing chart
                     if (chart) chart.destroy();
+                    // construct the Chart object using the canvas and config
                     chart = new Chart(ctx, config);
 
+                    // store the spans representing the AM/PM peak times
                     const amPeak = document.getElementById('amPeakTime');
                     const pmPeak = document.getElementById('pmPeakTime');
+                    // overwrite the AM/PM peak periods shown
                     amPeak.innerHTML = "AM Peak: " + obj.amPeakTimeBand;
                     pmPeak.innerHTML = "PM Peak: " + obj.pmPeakTimeBand;
 
+                    // store the element representing the table body
                     const table = document.getElementById('table');
+                    // clear the table
                     table.innerHTML = "";
 
+                    // iterate through adding a new row for each label
                     for (var n=0; n < labels.length; n++) {
-
+                        // each row contains the time band label and crowding percentage
 					    var row = "<tr><td>" + labels[n] + "</td>" 
                             + "<td>" + crowding[n].toFixed() + "</td></tr>";
 
@@ -76,13 +97,15 @@
         </script>
     </head>
     <body>
-        <h1><b>Crowding info at tube stations</b></h1>
-
-        <h5>Select a station and a day of the week to view visualisations of crowding data.</h5>
+        <!-- Greeting heading text -->
+        <h1><b>View crowding info at TfL tube stations</b></h1>
+        <h5>Select a station and a day of the week to see visualisations of crowding data.</h5>
 
         <form action="">
+            <!-- Station dropdown selection -->
             <label for="">Station:</label>
             <select name="station" id="stationInput">
+                <!-- NaPTAN IDs are value fields for each option -->
                 <option value="940GZZLUPAC">Paddington</option>
                 <option value="940GZZLUKSX">King’s Cross St Pancras</option>
                 <option value="940GZZLUEUS">Euston</option>
@@ -92,8 +115,10 @@
             </select>
             &nbsp;
 
+            <!-- Day of week dropdown selection -->
             <label for="">Day of week:</label>
             <select name="day" id="dayInput">
+                <!-- Day of week abbreviations are value fields for each option-->
                 <option value="mon">Monday</option>
                 <option value="tue">Tuesday</option>
                 <option value="wed">Wednesday</option>
@@ -104,22 +129,28 @@
             </select>
             &nbsp;
 
+            <!-- Button to confirm selections and trigger an API call via JS-->
             <button type="button" onclick="loadJSON()" class="button-primary">View crowding info!</button>
         </form>
 
         &nbsp;
+        <!-- Canvas for displaying chart -->
         <canvas id="chart"></canvas>
 
         &nbsp;
+        <!-- Display AM/PM peak time, populated via JS -->
         <span id="amPeakTime" style="display: block;"></span>
         &nbsp;
         <span id="pmPeakTime" style="display: block;"></span>
 
         &nbsp;
         <h2><b>Table of Crowding</b></h2>
+        <!-- Table for displaying numerical crowding data -->
         <table class="u-full-width">
+            <!-- Title labels for table -->
             <th>Time Band</th>
             <th>Crowding Percentage</th>
+            <!-- Body filled with actual data via JS -->
             <tbody id="table"></tbody>
         </table>
     </body>
